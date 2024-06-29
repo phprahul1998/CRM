@@ -134,7 +134,7 @@ class Crud_model extends Model {
             if ($this->log_activity) {
                 $data_before_update = $this->get_one($id);
             }
-
+            
             $success = $this->update_where($data, $where);
             if ($success) {
                 if ($this->log_activity) {

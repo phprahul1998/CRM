@@ -185,7 +185,7 @@ class Attendance extends Security_Controller {
             $this->access_only_allowed_members($user_id);
         }
 
-        $this->Attendance_model->log_time($user_id ? $user_id : $this->login_user->id, $note);
+        $this->Attendance_model->log_time($user_id ? $user_id : $this->login_user->id, $note,$location='');
 
         if ($user_id) {
             echo json_encode(array("success" => true, "data" => $this->_clock_in_out_row_data($user_id), 'id' => $user_id, 'message' => app_lang('record_saved'), "isUpdate" => true));
@@ -277,6 +277,7 @@ class Attendance extends Security_Controller {
             $to_time = strtotime($data->in_time? $data->in_time: "");
         }
         $from_time = strtotime($data->in_time? $data->in_time: "");
+        $location = $data->location? $data->location: "";
 
         $option_links = modal_anchor(get_uri("attendance/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_attendance'), "data-post-id" => $data->id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_attendance'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("attendance/delete"), "data-action" => "delete"));
@@ -303,6 +304,7 @@ class Attendance extends Security_Controller {
         return array(
             get_team_member_profile_link($data->user_id, $user),
             $data->in_time,
+            $location,
             format_to_date($data->in_time),
             format_to_time($data->in_time),
             $out_time ? $out_time : 0,

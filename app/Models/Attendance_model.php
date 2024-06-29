@@ -29,7 +29,7 @@ class Attendance_model extends Crud_model {
         $today_date = get_current_date();
         $sql = "SELECT *
         FROM $attendnace_table
-        WHERE deleted=0 AND user_id=$user_id AND status='incomplete' and DATE(in_time)='$today_date'";
+        WHERE deleted=0 AND user_id=$user_id  and DATE(in_time)='$today_date'";
         $result = $this->db->query($sql);
         if ($result->resultID->num_rows) {
             return $result->getRow();
@@ -44,7 +44,7 @@ class Attendance_model extends Crud_model {
         $today_date = get_current_date();
         $sql = "SELECT *
         FROM $attendnace_table
-        WHERE deleted=0 AND user_id=$user_id AND status='incomplete' and DATE(in_time)='$today_date' and id='$attanceId'";
+        WHERE deleted=0 AND user_id=$user_id  and DATE(in_time)='$today_date' and id='$attanceId'";
         $result = $this->db->query($sql);
         if ($result->resultID->num_rows) {
             return $result->getRow();
@@ -52,6 +52,33 @@ class Attendance_model extends Crud_model {
             return false;
         }
     }
+
+    function getUpdateclockout($user_id, $attendanceId) {
+        $user_id = intval($user_id);
+        $attendanceId = intval($attendanceId);
+        $attendance_table = $this->db->prefixTable('attendance');
+        $current_clock_record = $this->current_clock_in_record($user_id);
+        $now = get_current_utc_time();
+    
+        if ($current_clock_record && $current_clock_record->id) {
+            $sql = "UPDATE $attendance_table 
+                    SET out_time = ?, status = 'pending'
+                    WHERE user_id = ? AND id = ?";
+            
+            $result = $this->db->query($sql, [$now, $user_id, $attendanceId]);
+    
+            if ($this->db->affectedRows() > 0) {
+                $sql = "SELECT * FROM $attendance_table WHERE id = ?";
+                $result = $this->db->query($sql, [$attendanceId]);
+                return $result->getRow();
+            } else {
+                return false;
+            }
+        }
+    
+        return false;
+    }
+    
 
 
     function log_time($user_id, $note = "",$location="") {
@@ -63,9 +90,8 @@ class Attendance_model extends Crud_model {
             $data = array(
                 "out_time" => $now,
                 "status" => "pending",
-                "note" => $note,
-                "location" => $location,
-            );
+                "note" => $note
+                );
             return $this->ci_save($data, $current_clock_record->id);
         } else {
             $data = array(
