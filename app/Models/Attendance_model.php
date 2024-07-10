@@ -38,6 +38,33 @@ class Attendance_model extends Crud_model {
         }
     }
 
+    function getUserClockinInfo($user_id) {
+        $attendnace_table = $this->db->prefixTable('attendance');
+        $today_date = get_current_date();
+        $users_table = $this->db->prefixTable('users');
+        $usersql = "SELECT first_name,last_name,is_admin,role_id,email
+        FROM $users_table
+        WHERE  id='$user_id'";
+        $userresult = $this->db->query($usersql);
+            $userInfo= $userresult->getRow();
+            $sql = "SELECT *
+            FROM $attendnace_table
+            WHERE deleted=0 AND user_id=$user_id   and DATE(in_time)='$today_date'";
+            $result = $this->db->query($sql);
+            $attanceinfo= $result->getRow();
+            $makeUserData=[
+                'name' => (isset($userInfo->first_name) && isset($userInfo->last_name)) ? $userInfo->first_name . ' ' . $userInfo->last_name : null,
+                'email'=>isset($userInfo->email) ? $userInfo->email : null,
+                'is_admin'=>isset($userInfo->is_admin) ? $userInfo->is_admin : null,
+                'role_id' => isset($userInfo->role_id) ? $userInfo->role_id : null,
+                'in_time' => isset($attanceinfo->in_time) ? $attanceinfo->in_time : null,
+                'out_time' => isset($attanceinfo->out_time) ? $attanceinfo->out_time : null,
+                'location' => isset($attanceinfo->location) ? $attanceinfo->location : null,
+                'status' => isset($attanceinfo->status) ? $attanceinfo->status : null
+                ];
+            return $makeUserData;
+    }
+
     
     function getUserInfoClockin($user_id,$attanceId) {
         $attendnace_table = $this->db->prefixTable('attendance');

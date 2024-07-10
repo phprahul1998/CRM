@@ -20,7 +20,8 @@ class Api extends ResourceController
         if ($this->request->getMethod() !== 'post') {
             return $this->respond([
                 'message' => 'Method Not Allowed',
-                'data' => ''
+                'data' => '',
+                'status'=>false
             ], 405); 
         }
     
@@ -32,14 +33,16 @@ class Api extends ResourceController
             if (empty($email)) {
                 return $this->respond([
                     'message' => 'Enter Your Email Id.',
-                    'data' => ''
+                    'data' => '',
+                    'status'=>false
                 ]);
             }
     
             if (empty($password)) {
                 return $this->respond([
                     'message' => 'Enter your Password',
-                    'data' => ''
+                    'data' => '',
+                    'status'=>false
                 ]);
             }
             $userData = $this->usersModel->userApiauthenticate($email, $password);    
@@ -47,22 +50,76 @@ class Api extends ResourceController
                 case 'passnotfound':
                     $response = [
                         'message' => 'Please enter correct password',
-                        'data' => ''
+                        'data' => '',
+                        'status'=>false
                     ];
                     break;
                 case 'emailnotfound':
                     $response = [
                         'message' => 'Please enter correct Email',
-                        'data' => ''
+                        'data' => '',
+                        'status'=>false
+
+                        
                     ];
                     break;
                 default:
                     $response = [
                         'message' => 'Login Successfully',
-                        'data' => $userData
+                        'data' => $userData,
+                        'status'=>true
                     ];
                     break;
             }
+    
+            return $this->respond($response);
+    
+        } catch (\Exception $e) {
+            return $this->respond([
+                'message' => $e->getMessage(),
+                'data' => '',
+                'status'=>false
+            ]);
+        }
+    }
+    
+    public function getUserInfo(){
+        if ($this->request->getMethod() !== 'post') {
+            return $this->respond([
+                'message' => 'Method Not Allowed',
+                'data' => '',
+                'status'=>false
+            ], 405); 
+        }
+    
+        try {
+            $user_id = $this->request->getVar('user_id');
+            if (empty($user_id)) {
+                return $this->respond([
+                    'message' => 'Enter Your user Id.',
+                    'data' => '',
+                    'status'=>false
+                ]);
+            }
+            $userData = $this->attendanceModel->getUserClockinInfo($user_id); 
+            $userData['in_time'] = !empty($userData['in_time']) ? format_to_time($userData['in_time']) : null;
+            $userData['out_time'] = !empty($userData['out_time']) ? format_to_time($userData['out_time']) : null;
+            if(!empty($userData)){
+                $response = [
+                    'message' => 'Data found',
+                    'data' => $userData,
+                    'status'=>true
+    
+                ];
+            }else{
+                $response = [
+                    'message' => 'No data found',
+                    'data' => NULL,
+                    'status'=>false
+    
+                ];
+            }
+            
     
             return $this->respond($response);
     
@@ -73,14 +130,14 @@ class Api extends ResourceController
             ]);
         }
     }
-    
 
     public function clockIn(){
         $clockINdata = [];
         if ($this->request->getMethod() !== 'post') {
             return $this->respond([
                 'message' => 'Method Not Allowed',
-                'data' => ''
+                'data' => '',
+                'status'=>false
             ], 405); // 405 Method Not Allowed status code
         }
         $user_id = $this->request->getVar('user_id');
@@ -88,7 +145,8 @@ class Api extends ResourceController
         if (!$user_id) {
             $clockINdata = [
                 'message' => 'Enter Your user Id.',
-                'data' => ''
+                'data' => '',
+                'status'=>false
             ];
             return $this->respond($clockINdata);
         }
@@ -96,7 +154,8 @@ class Api extends ResourceController
         if (!$location) {
             $clockINdata = [
                 'message' => "Location can't be Empty.",
-                'data' => ''
+                'data' => '',
+                'status'=>false
             ];
             return $this->respond($clockINdata);
         }
@@ -106,6 +165,7 @@ class Api extends ResourceController
                 $clockINdata = [
                     'message' => 'You have already clocked in for today.',
                     'data' => $this->formatClockinData($checkuser),
+                    'status'=>false
                 ];
             } else {
                 $clockIndata = $this->attendanceModel->log_time($user_id, 'bye',$location);
@@ -113,6 +173,7 @@ class Api extends ResourceController
                 $clockINdata = [
                     'message' => 'Clock in successfully.',
                     'data' => $this->formatClockinData($clockinData),
+                    'status'=>true
                 ];
             }
     
@@ -121,7 +182,8 @@ class Api extends ResourceController
         } catch (\Exception $e) {
             $userData = [
                 'message' => $e->getMessage(),
-                'data' => ''
+                'data' => '',
+                'status'=>false
             ];
             return $this->respond($userData);
         }
@@ -143,14 +205,16 @@ class Api extends ResourceController
         if ($this->request->getMethod() !== 'post') {
             return $this->respond([
                 'message' => 'Method Not Allowed',
-                'data' => ''
+                'data' => '',
+                'status'=>false
             ], 405); // 405 Method Not Allowed status code
         }
-        $user_id = 1;
+        $user_id = $this->request->getVar('user_id');
         if (!$user_id) {
             $clockOutdata = [
                 'message' => 'Enter Your user Id.',
-                'data' => ''
+                'data' => '',
+                'status'=>false
             ];
             return $this->respond($clockOutdata);
         }
@@ -168,6 +232,7 @@ class Api extends ResourceController
                  $clockOutdata = [
                     'message' => 'Clock out successfully.',
                     'data' => $this->formatClockOutData($udpateclockout),
+                    'status'=>true
                 ];
                
             }
@@ -177,7 +242,8 @@ class Api extends ResourceController
         } catch (\Exception $e) {
             $userData = [
                 'message' => $e->getMessage(),
-                'data' => ''
+                'data' => '',
+                'status'=>false
             ];
             return $this->respond($userData);
         }

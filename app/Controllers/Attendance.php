@@ -186,6 +186,8 @@ class Attendance extends Security_Controller {
         }
 
         $this->Attendance_model->log_time($user_id ? $user_id : $this->login_user->id, $note,$location='');
+        // $checkuser = $this->Attendance_model->check_user_isclockin($this->login_user->id);
+        // print_r($checkuser);
 
         if ($user_id) {
             echo json_encode(array("success" => true, "data" => $this->_clock_in_out_row_data($user_id), 'id' => $user_id, 'message' => app_lang('record_saved'), "isUpdate" => true));
