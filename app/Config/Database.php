@@ -9,6 +9,7 @@ use CodeIgniter\Database\Config;
  */
 class Database extends Config
 {
+	
 	/**
 	 * The directory that holds the Migrations
 	 * and Seeds directories.
@@ -81,6 +82,47 @@ class Database extends Config
 	public function __construct()
 	{
 		parent::__construct();
+		if ($_SERVER['HTTP_HOST'] === 'cr.localhost') {
+			$this->default = [
+				'DSN'      => '',
+				'hostname' => 'localhost',
+				'username' => 'root',
+				'password' => '',
+				'database' => 'crm',
+				'DBDriver' => 'MySQLi',
+				'DBPrefix' => 'rise_',
+				'pConnect' => false,
+				'DBDebug'  => (ENVIRONMENT !== 'production'),
+				'charset'  => 'utf8',
+				'DBCollat' => 'utf8_general_ci',
+				'swapPre'  => '',
+				'encrypt'  => false,
+				'compress'  => false,
+				'strictOn'  => false,
+				'failover'  => [],
+				'port'     => 3306,
+			];
+		} else {
+			$this->default = [
+				'DSN'      => '',
+				'hostname' => 'localhost',
+				'username' => 'iamrootcrm',
+				'password' => 'SorryIcanTellyou@Iamroot',
+				'database' => 'cws_crm',
+				'DBDriver' => 'MySQLi',
+				'DBPrefix' => 'rise_',
+				'pConnect' => false,
+				'DBDebug'  => (ENVIRONMENT !== 'production'),
+				'charset'  => 'utf8',
+				'DBCollat' => 'utf8_general_ci',
+				'swapPre'  => '',
+				'encrypt'  => false,
+				'compress'  => false,
+				'strictOn'  => false,
+				'failover'  => [],
+				'port'     => 3306,
+			];
+		}
 
 		// Ensure that we always set the database group to 'tests' if
 		// we are currently running an automated test suite, so that
