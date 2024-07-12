@@ -178,14 +178,18 @@ class Attendance extends Security_Controller {
 
     //clock in / clock out
     function log_time($user_id = 0) {
+        if($user_id==0){
+             $user_id = $this->request->getPost('user_id');
+        }
         $note = $this->request->getPost('note');
+        $location = $this->request->getPost('location');
 
         if ($user_id && $user_id != $this->login_user->id) {
             //check if the login user has permission to clock in/out this user
             $this->access_only_allowed_members($user_id);
         }
 
-        $this->Attendance_model->log_time($user_id ? $user_id : $this->login_user->id, $note,$location='');
+        $this->Attendance_model->log_time($user_id ? $user_id : $this->login_user->id, $note,$location);
         // $checkuser = $this->Attendance_model->check_user_isclockin($this->login_user->id);
         // print_r($checkuser);
 
@@ -280,6 +284,7 @@ class Attendance extends Security_Controller {
         }
         $from_time = strtotime($data->in_time? $data->in_time: "");
         $location = $data->location? $data->location: "";
+        $out_location = $data->out_location? $data->out_location: "";
 
         $option_links = modal_anchor(get_uri("attendance/modal_form"), "<i data-feather='edit' class='icon-16'></i>", array("class" => "edit", "title" => app_lang('edit_attendance'), "data-post-id" => $data->id))
                 . js_anchor("<i data-feather='x' class='icon-16'></i>", array('title' => app_lang('delete_attendance'), "class" => "delete", "data-id" => $data->id, "data-action-url" => get_uri("attendance/delete"), "data-action" => "delete"));
@@ -306,15 +311,18 @@ class Attendance extends Security_Controller {
         return array(
             get_team_member_profile_link($data->user_id, $user),
             $data->in_time,
-            $location,
+           
             format_to_date($data->in_time),
             format_to_time($data->in_time),
             $out_time ? $out_time : 0,
             $out_time ? format_to_date($out_time) : "-",
             $out_time ? format_to_time($out_time) : "-",
             convert_seconds_to_time_format(abs($to_time - $from_time)),
+            $location,
+            $out_location,
             $note_link,
-            $option_links
+            $option_links,
+           
         );
     }
 
@@ -524,6 +532,7 @@ class Attendance extends Security_Controller {
     }
 
     private function _make_clock_in_out_row($data) {
+        $page_name = "clockout";
         if (isset($data->attendance_id)) {
             $in_time = format_to_time($data->in_time);
             $in_datetime = format_to_datetime($data->in_time);
@@ -531,7 +540,20 @@ class Attendance extends Security_Controller {
             $view_data = modal_anchor(get_uri("attendance/note_modal_form/$data->id"), "<i data-feather='log-out' class='icon-16'></i> " . app_lang('clock_out'), array("class" => "btn btn-default", "title" => app_lang('clock_out'), "id" => "timecard-clock-out", "data-post-id" => $data->attendance_id, "data-post-clock_out" => 1, "data-post-id" => $data->id));
         } else {
             $status = "<div class='mb15'>" . app_lang('not_clocked_id_yet') . "</div>";
-            $view_data = js_anchor("<i data-feather='log-in' class='icon-16'></i> " . app_lang('clock_in'), array('title' => app_lang('clock_in'), "class" => "btn btn-default spinning-btn", "data-action-url" => get_uri("attendance/log_time/$data->id"), "data-action" => "update", "data-inline-loader" => "1", "data-post-id" => $data->id));
+            $view_data = js_anchor(
+            "<i data-feather='log-in' class='icon-16'></i> " . app_lang('clock_in'),
+            array(
+            'title' => app_lang('clock_in'),
+            "class" => "btn btn-default spinning-btn",
+            // "data-action-url" => get_uri("attendance/log_time/{$data->id}/{$page_name}"),
+            "data-action" => "update",
+            "data-inline-loader" => "1",
+            "data-post-id" => $data->id,
+            "data-page-name" => $page_name
+            )
+        );
+
+        
         }
 
         $image_url = get_avatar($data->image);

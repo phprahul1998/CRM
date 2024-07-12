@@ -210,6 +210,7 @@ class Api extends ResourceController
             ], 405); // 405 Method Not Allowed status code
         }
         $user_id = $this->request->getVar('user_id');
+        $location = $this->request->getVar('out_location');
         if (!$user_id) {
             $clockOutdata = [
                 'message' => 'Enter Your user Id.',
@@ -218,6 +219,14 @@ class Api extends ResourceController
             ];
             return $this->respond($clockOutdata);
         }
+        if (!$location) {
+            $clockINdata = [
+                'message' => "Location can't be Empty.",
+                'data' => '',
+                'status'=>false
+            ];
+            return $this->respond($clockINdata);
+        }
 
         try {
             $checkuser = $this->attendanceModel->check_user_isclockin($user_id);
@@ -225,7 +234,7 @@ class Api extends ResourceController
                 $attId = $checkuser->id;
                 $status = $checkuser->status;
                 if($status=='incomplete'){
-                    $udpateclockout = $this->attendanceModel->getUpdateclockout($user_id,$attId);
+                    $udpateclockout = $this->attendanceModel->getUpdateclockout($user_id,$attId,$location);
                 }else{
                     $udpateclockout = $this->attendanceModel->check_user_isclockin($user_id);
                 }

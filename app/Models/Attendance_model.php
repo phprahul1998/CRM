@@ -80,7 +80,7 @@ class Attendance_model extends Crud_model {
         }
     }
 
-    function getUpdateclockout($user_id, $attendanceId) {
+    function getUpdateclockout($user_id, $attendanceId,$location) {
         $user_id = intval($user_id);
         $attendanceId = intval($attendanceId);
         $attendance_table = $this->db->prefixTable('attendance');
@@ -88,9 +88,9 @@ class Attendance_model extends Crud_model {
         $now = get_current_utc_time();
     
         if ($current_clock_record && $current_clock_record->id) {
-            $sql = "UPDATE $attendance_table 
-                    SET out_time = ?, status = 'pending'
-                    WHERE user_id = ? AND id = ?";
+             $sql = "UPDATE $attendance_table 
+                    SET out_time = '$now', out_location = '$location', status = 'pending'
+                    WHERE user_id = $user_id AND id = $attendanceId";
             
             $result = $this->db->query($sql, [$now, $user_id, $attendanceId]);
     

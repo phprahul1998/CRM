@@ -6,8 +6,8 @@
 
             <li><a role="presentation" data-bs-toggle="tab"  href="javascript:;" data-bs-target="#daily-attendance"><?php echo app_lang("daily"); ?></a></li>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("attendance/custom/"); ?>" data-bs-target="#custom-attendance"><?php echo app_lang('custom'); ?></a></li>
-            <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("attendance/summary/"); ?>" data-bs-target="#summary-attendance"><?php echo app_lang('summary'); ?></a></li>
-            <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("attendance/summary_details/"); ?>" data-bs-target="#summary-attendance-details"><?php echo app_lang('summary_details'); ?></a></li>
+            <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("attendance/summary/"); ?>" data-bs-target="#summary-attendance"><?php echo app_lang('summary'); ?></a></li> -->
+            <!-- <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("attendance/summary_details/"); ?>" data-bs-target="#summary-attendance-details"><?php echo app_lang('summary_details'); ?></a></li> -->
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("attendance/members_clocked_in/"); ?>" data-bs-target="#members-clocked-in"><?php echo app_lang('members_clocked_in'); ?></a></li>
             <li><a role="presentation" data-bs-toggle="tab" href="<?php echo_uri("attendance/clock_in_out"); ?>" data-bs-target="#clock-in-out"><?php echo app_lang('clock_in_out'); ?></a></li>
 
@@ -45,18 +45,21 @@
             columns: [
                 {title: "<?php echo app_lang("team_member"); ?>", "class": "w15p"},
                 {visible: false, searchable: false},
-                {title: "<?php echo app_lang("location"); ?>", "class": "w10p", iDataSort: 1},
+               
                 {title: "<?php echo app_lang("in_date"); ?>", "class": "w10p", iDataSort: 1},
-                {title: "<?php echo app_lang("in_time"); ?>", "class": "w15p"},
+                {title: "<?php echo app_lang("in_time"); ?>", "class": "w10p"},
                 {visible: false, searchable: false},
-                {title: "<?php echo app_lang("out_date"); ?>", "class": "w15p", iDataSort: 4},
-                {title: "<?php echo app_lang("out_time"); ?>", "class": "w15p"},
+                {title: "<?php echo app_lang("out_date"); ?>", "class": "w10p", iDataSort: 4},
+                {title: "<?php echo app_lang("out_time"); ?>", "class": "w10p"},
                 {title: "<?php echo app_lang("duration"); ?>", "class": "text-right"},
+                {title: "<?php echo app_lang("location"); ?>", "class": "w10p", iDataSort: 1},
+                {title: "<?php echo app_lang("out_location"); ?>", "class": "w10pp", iDataSort: 1},
                 {title: '<i data-feather="message-circle" class="icon-16"></i>', "class": "text-center w50"},
-                {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"}
+                {title: '<i data-feather="menu" class="icon-16"></i>', "class": "text-center option w100"},
+                
             ],
-            printColumns: [0, 2, 3, 5, 6, 7],
-            xlsColumns: [0, 2, 3, 5, 6, 7],
+            printColumns: [0,2,3,5,6,7,8,9],
+            xlsColumns: [0,2,3,5,6,7,8,9],
             summation: [{column: 7, dataType: 'time'}]
         });
 
